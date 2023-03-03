@@ -429,7 +429,7 @@
 							"\r",
 							"\r",
 							"pm.test([\"Liability is Updated\"], function(){\r",
-							"\tpm.expect([tmpupdateliability]).to.include(tmpupdateliability)\r",
+							"\tpm.expect([result.liability]).to.include(tmpupdateliability)\r",
 							"});\r",
 							"\r",
 							"\r",
