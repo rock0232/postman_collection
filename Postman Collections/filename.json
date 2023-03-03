@@ -345,12 +345,12 @@
 							"    pm.expect(pm.response.text()).to.include(\"true;Bet has been placed successfully.\");\r",
 							"});\r",
 							"\r",
-							"console.log(pm.response.text());\r",
-							"var match_id = pm.environment.get(\"tmpBet_IDs\");\r",
-							"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
-							"var i = 0;\r",
-							"var requestBody = pm.request.body.raw;\r",
-							"pm.environment.set(\"tmprequestBody\", requestBody);\r",
+							"// console.log(pm.response.text());\r",
+							"// var match_id = pm.environment.get(\"tmpBet_IDs\");\r",
+							"// var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+							"// var i = 0;\r",
+							"// var requestBody = pm.request.body.raw;\r",
+							"// pm.environment.set(\"tmprequestBody\", requestBody);\r",
 							"postman.setNextRequest(\"UpdatedBalance\");"
 						],
 						"type": "text/javascript"
