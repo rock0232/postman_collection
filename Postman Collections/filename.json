@@ -405,7 +405,7 @@
 							" \r",
 							"var balance = pm.environment.get(\"tmpbalance\")\r",
 							"var stake = pm.environment.get(\"tmpstake\")\r",
-							"var liability = pm.environment.get(\"tmpliability\")\r",
+							"var liability = pm.environment.get(\"tmpliability\");\r",
 							"var result = tmp.result;\r",
 							"var tmpupdatebalance = balance - stake;\r",
 							"var tmpupdateliability = liability - stake;\r",
