@@ -421,7 +421,7 @@
 							"var liability = pm.environment.get(\"tmpliability\")\r",
 							"\r",
 							"var result = tmp.result;\r",
-							"var tmpupdatebalance = balance - stake;\r",
+							"var tmpupdatebalance = balance - stake\r",
 							"var tmpupdateliability = liability + stake;\r",
 							"\r",
 							"pm.test([\"Wallet balance is Updated\"], function(){\r",
