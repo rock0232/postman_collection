@@ -373,7 +373,7 @@
 					"script": {
 						"id": "b0abcc27-7a8e-4d82-9ba1-bffee5120537",
 						"exec": [
-							"pm.environment.set(\"tmpstake\", 100)"
+							"pm.environment.set(\"tmpstake\", 100);"
 						],
 						"type": "text/javascript"
 					}
