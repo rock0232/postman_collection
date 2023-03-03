@@ -285,16 +285,6 @@
 					"script": {
 						"id": "28362048-d774-4d36-8dc7-4591663d0504",
 						"exec": [
-							"function cleanup() {\r",
-							"    const clean = _.keys(pm.environment.toObject())\r",
-							"    _.each(clean, (arrItem) => {\r",
-							"        if (arrItem.startsWith(\"tmp\")) {\r",
-							"            pm.environment.unset(arrItem)\r",
-							"        }\r",
-							"    })\r",
-							"};\r",
-							"// cleanup()\r",
-							"\r",
 							"var tmp = JSON.parse(responseBody);\r",
 							"console.log(tmp);\r",
 							"\r",
