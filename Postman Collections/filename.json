@@ -489,9 +489,9 @@
 						"exec": [
 							"var betid = pm.environment.get(\"tmpBet_ID\");\r",
 							"var betdetailid = pm.environment.get(\"tmpBetDetailID\");\r",
-							"var stake = pm.environment.get(\"tmpstake\")\r",
-							"var auth = pm.environment.get(\"tmpAUTH_TOKEN\")\r",
-							"var requestBody = pm.environment.get(\"tmprequestBody\")\r",
+							"var stake = pm.environment.get(\"tmpstake\");\r",
+							"var auth = pm.environment.get(\"tmpAUTH_TOKEN\");\r",
+							"var requestBody = pm.environment.get(\"tmprequestBody\");\r",
 							"var myJSON = JSON.parse(requestBody);\r",
 							"\r",
 							"var match_id = pm.environment.get(\"tmpBet_IDs\");\r",
