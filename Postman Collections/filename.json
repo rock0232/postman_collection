@@ -417,7 +417,7 @@
 							"var liability = pm.environment.get(\"tmpliability\")\r",
 							"\r",
 							"var result = tmp.result;\r",
-							"var tmpupdatebalance = balance - stake\r",
+							"var tmpupdatebalance = balance - stake;\r",
 							"var tmpupdateliability = liability + stake;\r",
 							"\r",
 							"pm.test([\"Wallet balance is Updated\"], function(){\r",
@@ -471,8 +471,7 @@
 					{
 						"key": "Authorization",
 						"value": "{{tmpAUTH_TOKEN}}",
-						"type": "text",
-						"disabled": true
+						"type": "text"
 					}
 				],
 				"url": "{{HOST_URL}}Chip/Client/Balance"
