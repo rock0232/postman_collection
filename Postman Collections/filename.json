@@ -27,7 +27,7 @@
 					}
 				}
 			],
-			"_postman_id": "328b25a9-fb85-419f-9e54-afb8272a49a7",
+			"id": "328b25a9-fb85-419f-9e54-afb8272a49a7",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -67,7 +67,7 @@
 					}
 				}
 			],
-			"_postman_id": "30d0d60a-40c7-410f-8fdb-e12ae39ea7c3",
+			"id": "30d0d60a-40c7-410f-8fdb-e12ae39ea7c3",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -113,7 +113,7 @@
 					}
 				}
 			],
-			"_postman_id": "e75fca7e-491b-446f-86ff-610480e7c6b6",
+			"id": "e75fca7e-491b-446f-86ff-610480e7c6b6",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -128,10 +128,7 @@
 				],
 				"body": {
 					"mode": "urlencoded",
-					"urlencoded": [],
-					"options": {
-						"urlencoded": {}
-					}
+					"urlencoded": []
 				},
 				"url": "{{HOST_URL}}Market/ActiveMarketList"
 			},
@@ -190,7 +187,7 @@
 					}
 				}
 			],
-			"_postman_id": "821d0e29-dbc3-43a9-ba4d-6e29adba43e5",
+			"id": "821d0e29-dbc3-43a9-ba4d-6e29adba43e5",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -245,7 +242,7 @@
 					}
 				}
 			],
-			"_postman_id": "95736c95-6c54-4352-87ca-5caa0c15c650",
+			"id": "95736c95-6c54-4352-87ca-5caa0c15c650",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -322,7 +319,7 @@
 					}
 				}
 			],
-			"_postman_id": "c5cd7009-c402-4d2a-9f88-598642fbccab",
+			"id": "c5cd7009-c402-4d2a-9f88-598642fbccab",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -378,7 +375,7 @@
 					}
 				}
 			],
-			"_postman_id": "e228e3ac-88e1-4918-ad2c-dcda62374ffc",
+			"id": "e228e3ac-88e1-4918-ad2c-dcda62374ffc",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -458,7 +455,7 @@
 					}
 				}
 			],
-			"_postman_id": "991152ab-f5a4-4460-a9c6-19e68c4d5cd1",
+			"id": "991152ab-f5a4-4460-a9c6-19e68c4d5cd1",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -534,13 +531,13 @@
 					"script": {
 						"id": "11e67e15-ba9d-4af6-9230-aa5d70e3b39d",
 						"exec": [
-							"pm.environment.set(\"tmpstake\", 100)"
+							"pm.environment.set(\"tmpstake\", 100);"
 						],
 						"type": "text/javascript"
 					}
 				}
 			],
-			"_postman_id": "16e0191e-cb06-49d4-8b6c-18064367ae1a",
+			"id": "16e0191e-cb06-49d4-8b6c-18064367ae1a",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
