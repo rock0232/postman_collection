@@ -359,10 +359,8 @@
 							"var match_id = pm.environment.get(\"tmpBet_IDs\");\r",
 							"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
 							"var i = 0;\r",
-							"\r",
 							"var requestBody = pm.request.body.raw;\r",
 							"pm.environment.set(\"tmprequestBody\", requestBody);\r",
-							"\r",
 							"postman.setNextRequest(\"UpdatedBalance\");"
 						],
 						"type": "text/javascript"
