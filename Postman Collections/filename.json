@@ -417,7 +417,6 @@
 							"\tpm.expect(result.balance).to.eql(tmpupdatebalance)\r",
 							"});\r",
 							"\r",
-							"\r",
 							"pm.test(\"Liability is Updated\", function(){\r",
 							"\tpm.expect(result.liability).to.eql(tmpupdateliability)\r",
 							"});\r",
