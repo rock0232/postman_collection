@@ -1,0 +1,574 @@
+{
+	"info": {
+		"_postman_id": "c8111e46-963d-4f41-9da4-d5f9cf11bd05",
+		"name": "Test_Place_Bet",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14570965"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Set Barrier Token To Environment Variable\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"pm.environment.set(\"tmpAUTH_TOKEN\", \"bearer \"+ jsonData.result.access_token);\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"postman.setNextRequest(\"SetRealBalanceUse\");\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "sitename",
+						"value": "{{SiteName}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userName\": \"am11_1\",\r\n    \"password\": \"Abc@123\",\r\n    \"deviceinfo\": \"strModel:vivo - vivo 1716\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST_URL}}Account/AppLogin",
+					"host": [
+						"{{HOST_URL}}Account"
+					],
+					"path": [
+						"AppLogin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SetRealBalanceUse",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"postman.setNextRequest(\"ActiveMarketList\");\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{tmpAUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST_URL}}Account/SetRealBalanceUse",
+					"host": [
+						"{{HOST_URL}}Account"
+					],
+					"path": [
+						"SetRealBalanceUse"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ActiveMarketList",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Set Match (Event) Id Into Environment Variable\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"var getmatchid = jsonData.result;\r",
+							"var matchedIds = [];\r",
+							"var BetID = [];\r",
+							"\r",
+							"getmatchid.forEach(function(item) {\r",
+							"    if (item.mn === \"TO WIN THE TOSS\") {\r",
+							"        BetID.push(item.mid);\r",
+							"        matchedIds.push(item.eid);\r",
+							"    }\r",
+							"});\r",
+							"pm.environment.set(\"tmpBet_IDs\", JSON.stringify(BetID));\r",
+							"pm.environment.set(\"tmpMatch_IDs\", JSON.stringify(matchedIds));\r",
+							"\r",
+							"postman.setNextRequest(\"GetMatchwiseMarketinfo\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{tmpAUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "{{HOST_URL}}Market/ActiveMarketList",
+					"host": [
+						"{{HOST_URL}}Market"
+					],
+					"path": [
+						"ActiveMarketList"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetMatchwiseMarketinfo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Set Bet Id In Environment variable\r",
+							"var match_id = pm.environment.get(\"tmpBet_IDs\");\r",
+							"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+							"pm.environment.set(\"tmpBet_ID\", array[0][0]);\r",
+							"\r",
+							"// var i = 0;\r",
+							"// while(i<array[0].length ){\r",
+							"//     postman.setNextRequest(\"GetMatchwiseMarketinfo\");\r",
+							"//     var demo = JSON.parse(\"[\" + match_id + \"]\");\r",
+							"//     arrayvalue = demo[0][i]\r",
+							"//     console.log(arrayvalue)\r",
+							"//     if (pm.response.to.have.status(200))\r",
+							"//     {\r",
+							"//         if (arrayvalue)\r",
+							"//         {\r",
+							"//             postman.setNextRequest(\"GetEventWiseMarketInfo\");\r",
+							"//             break\r",
+							"//         }\r",
+							"//     }    \r",
+							"//     i++;\r",
+							"// }\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// console.log(pm.environment.get(\"tmpMatch_IDs\"));\r",
+							"var match_id = pm.environment.get(\"tmpMatch_IDs\")\r",
+							"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+							"pm.environment.set(\"tmpMatch_ID\", array[0][1])\r",
+							"// pm.environment.get(\"variable_key\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{tmpAUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST_URL}}Market/GetMatchWiseMarketInfo?matchId={{tmpMatch_ID}}",
+					"host": [
+						"{{HOST_URL}}Market"
+					],
+					"path": [
+						"GetMatchWiseMarketInfo"
+					],
+					"query": [
+						{
+							"key": "matchId",
+							"value": "{{tmpMatch_ID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetEventWiseMarketInfo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"var getmatchid = jsonData.result;\r",
+							"var runinfo = getmatchid.runnerInfo;\r",
+							"pm.environment.set(\"tmpBetDetailID\", JSON.stringify(runinfo[3].rid));\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"postman.setNextRequest(\"Balance\");\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{tmpAUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST_URL}}Market/GetEventWiseMarketInfo?matchId={{tmpMatch_ID}}",
+					"host": [
+						"{{HOST_URL}}Market"
+					],
+					"path": [
+						"GetEventWiseMarketInfo"
+					],
+					"query": [
+						{
+							"key": "matchId",
+							"value": "{{tmpMatch_ID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Balance",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"function cleanup() {\r",
+							"    const clean = _.keys(pm.environment.toObject())\r",
+							"    _.each(clean, (arrItem) => {\r",
+							"        if (arrItem.startsWith(\"tmp\")) {\r",
+							"            pm.environment.unset(arrItem)\r",
+							"        }\r",
+							"    })\r",
+							"};\r",
+							"// cleanup()\r",
+							"\r",
+							"var tmp = JSON.parse(responseBody);\r",
+							"console.log(tmp);\r",
+							"\r",
+							"var result = tmp.result;\r",
+							"var tmpbalance = result.balance;\r",
+							"var tmpliability = result.liability;\r",
+							"\r",
+							"pm.environment.set(\"tmpbalance\", tmpbalance);\r",
+							"pm.environment.set(\"tmpliability\", tmpliability);\r",
+							"\r",
+							"postman.setNextRequest(\"PlaceBet\");\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{tmpAUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST_URL}}Chip/Client/Balance",
+					"host": [
+						"{{HOST_URL}}Chip"
+					],
+					"path": [
+						"Client",
+						"Balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PlaceBet",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Bet has been placed successfully\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"true;Bet has been placed successfully.\");\r",
+							"});\r",
+							"\r",
+							"console.log(pm.response.text());\r",
+							"var match_id = pm.environment.get(\"tmpBet_IDs\");\r",
+							"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+							"var i = 0;\r",
+							"var requestBody = pm.request.body.raw;\r",
+							"pm.environment.set(\"tmprequestBody\", requestBody);\r",
+							"postman.setNextRequest(\"UpdatedBalance\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"tmpstake\", 100);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{tmpAUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"BetId\": {{tmpBet_ID}},\r\n  \"BetDetailId\": {{tmpBetDetailID}},\r\n  \"IsBack\": true,\r\n  \"Rate\": 1.97,\r\n  \"Stake\": {{tmpstake}},\r\n  \"Fancytype\": 10,\r\n  \"Point\": 1.97,\r\n  \"placeFrom\": 1,\r\n  \"deviceinfo\": \"browser=Chrome:: device=Desktop:: os=Windows:: latitude=0 :: longitude=0\",\r\n  \"isWager\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST_URL}}Bet/PlaceBet",
+					"host": [
+						"{{HOST_URL}}Bet"
+					],
+					"path": [
+						"PlaceBet"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdatedBalance",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var tmp = JSON.parse(responseBody);\r",
+							"console.log(tmp);\r",
+							"\r",
+							"var balance = pm.environment.get(\"tmpbalance\")\r",
+							"var stake = pm.environment.get(\"tmpstake\")\r",
+							"var liability = pm.environment.get(\"tmpliability\")\r",
+							"\r",
+							"var result = tmp.result;\r",
+							"var tmpupdatebalance = balance - stake\r",
+							"var tmpupdateliability = liability + stake;\r",
+							"\r",
+							"pm.test([\"Wallet balance is Updated\"], function(){\r",
+							"\tpm.expect([tmpupdatebalance]).to.include(tmpupdatebalance)\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test([\"Liability is Updated\"], function(){\r",
+							"\tpm.expect([tmpupdateliability]).to.include(tmpupdateliability)\r",
+							"});\r",
+							"\r",
+							"\r",
+							"function cleanup() {\r",
+							"    const clean = _.keys(pm.environment.toObject())\r",
+							"    _.each(clean, (arrItem) => {\r",
+							"        if (arrItem.startsWith(\"tmp\")) {\r",
+							"            pm.environment.unset(arrItem)\r",
+							"        }\r",
+							"    })\r",
+							"};\r",
+							"cleanup()\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{tmpAUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST_URL}}Chip/Client/Balance",
+					"host": [
+						"{{HOST_URL}}Chip"
+					],
+					"path": [
+						"Client",
+						"Balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetallBetList",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// var betid = pm.environment.get(\"tmpBet_ID\");\r",
+							"// var betdetailid = pm.environment.get(\"tmpBetDetailID\");\r",
+							"// var stake = pm.environment.get(\"tmpstake\");\r",
+							"// var auth = pm.environment.get(\"tmpAUTH_TOKEN\");\r",
+							"// var requestBody = pm.environment.get(\"tmprequestBody\");\r",
+							"// var myJSON = JSON.parse(requestBody);\r",
+							"\r",
+							"// var match_id = pm.environment.get(\"tmpBet_IDs\");\r",
+							"// var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+							"// console.log(array[0][1])\r",
+							"// var i = 0;\r",
+							"// while(i < array[0].length ){\r",
+							"    \r",
+							"//     var requestData = {\r",
+							"//         // Add request data here\r",
+							"//         // For example:\r",
+							"//         method: \"POST\",\r",
+							"//         url: \"https://uatapib2c.cloudd.live/api/Bet/PlaceBet\",\r",
+							"//         header:{\r",
+							"//             Authorization: auth\r",
+							"//         },\r",
+							"//         body: myJSON\r",
+							"//     };\r",
+							"\r",
+							"//     postman.setNextRequest(\"PlaceBet\");\r",
+							"//     pm.sendRequest(requestData, function (err, response) {\r",
+							"//         // console.log(array[i]);\r",
+							"//     if (response.text().includes(\"successfully\")){\r",
+							"//         i = array[0].length; // break out of the loop    \r",
+							"//     }\r",
+							"//     });\r",
+							"//     i++;\r",
+							"// }\r",
+							"// console.log(myJSON)\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"tmpstake\", 100);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{tmpAUTH_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST_URL}}Market/GetAllBetList",
+					"host": [
+						"{{HOST_URL}}Market"
+					],
+					"path": [
+						"GetAllBetList"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
