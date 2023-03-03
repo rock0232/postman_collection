@@ -394,7 +394,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"BetId\": {{tmpBet_ID}},\r\n  \"BetDetailId\": {{tmpBetDetailID}},\r\n  \"IsBack\": true,\r\n  \"Rate\": 1.97,\r\n  \"Stake\": {{stake}},\r\n  \"Fancytype\": 10,\r\n  \"Point\": 1.97,\r\n  \"placeFrom\": 1,\r\n  \"deviceinfo\": \"browser=Chrome:: device=Desktop:: os=Windows:: latitude=0 :: longitude=0\",\r\n  \"isWager\": false\r\n}",
+					"raw": "{\r\n  \"BetId\": {{tmpBet_ID}},\r\n  \"BetDetailId\": {{tmpBetDetailID}},\r\n  \"IsBack\": true,\r\n  \"Rate\": 1.97,\r\n  \"Stake\": {{tmpstake}},\r\n  \"Fancytype\": 10,\r\n  \"Point\": 1.97,\r\n  \"placeFrom\": 1,\r\n  \"deviceinfo\": \"browser=Chrome:: device=Desktop:: os=Windows:: latitude=0 :: longitude=0\",\r\n  \"isWager\": false\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
