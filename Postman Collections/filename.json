@@ -61,7 +61,11 @@
 					"script": {
 						"id": "575ad641-0d5b-4adf-92ec-560c8c6971b4",
 						"exec": [
-							"postman.setNextRequest(\"ActiveMarketList\");"
+							"postman.setNextRequest(\"ActiveMarketList\");\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
 						],
 						"type": "text/javascript"
 					}
