@@ -432,15 +432,7 @@
 							"});\r",
 							"\r",
 							"\r",
-							"function cleanup() {\r",
-							"    const clean = _.keys(pm.environment.toObject())\r",
-							"    _.each(clean, (arrItem) => {\r",
-							"        if (arrItem.startsWith(\"tmp\")) {\r",
-							"            pm.environment.unset(arrItem)\r",
-							"        }\r",
-							"    })\r",
-							"};\r",
-							"cleanup()\r",
+							"\r",
 							""
 						],
 						"type": "text/javascript"
