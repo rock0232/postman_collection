@@ -343,6 +343,7 @@
 					"script": {
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.environment.set(\"tmpstake\", pm.environment.get(\"tmpstake\"))\r",
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
 							"pm.test(\"Bet has been placed successfully\", function () {\r",
@@ -407,15 +408,15 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"var tmp = JSON.parse(responseBody);\r",
+							"var response = JSON.parse(responseBody);\r",
 							" \r",
 							"var balance = pm.environment.get(\"tmpbalance\");\r",
 							"var stake = pm.environment.get(\"tmpstake\");\r",
 							"var liability = pm.environment.get(\"tmpliability\");\r",
-							"var result = tmp.result;\r",
+							"var result = response.result;\r",
 							"var tmpupdatebalance = balance - stake;\r",
 							"var tmpupdateliability = liability - stake;\r",
-							"\r",
+							"console.log(tmpupdatebalance)\r",
 							"pm.test(\"Wallet balance is Updated\", function(){\r",
 							"\tpm.expect(result.balance).to.eql(tmpupdatebalance)\r",
 							"});\r",
@@ -423,8 +424,6 @@
 							"pm.test(\"Liability is Updated\", function(){\r",
 							"\tpm.expect(result.liability).to.eql(tmpupdateliability)\r",
 							"});\r",
-							"\r",
-							"\r",
 							""
 						],
 						"type": "text/javascript"
