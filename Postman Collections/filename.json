@@ -409,7 +409,7 @@
 							"var result = tmp.result;\r",
 							"var tmpupdatebalance = balance - stake;\r",
 							"var tmpupdateliability = liability - stake;\r",
-							"console.log(tmpupdatebalance)\r",
+							"console.log(balance)\r",
 							"pm.test(\"Wallet balance is Updated\", function(){\r",
 							"\tpm.expect(result.balance).to.eql(tmpupdatebalance)\r",
 							"    \r",
