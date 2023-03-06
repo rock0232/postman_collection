@@ -401,7 +401,7 @@
 					"script": {
 						"id": "53c0a727-4b20-4809-9249-9aade8fbdf9b",
 						"exec": [
-							"var tmp = JSON.parse(responseBody);\r",
+							"var response = JSON.parse(responseBody);\r",
 							" \r",
 							"var balance = pm.environment.get(\"tmpbalance\");\r",
 							"var stake = pm.environment.get(\"tmpstake\");\r",
