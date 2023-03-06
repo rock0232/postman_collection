@@ -339,6 +339,7 @@
 						"id": "e95a9051-4468-4fa9-bfcb-0671d023d00b",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.environment.set(\"tmpstake\", pm.environment.get(\"tmpstake\"))\r",
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
 							"pm.test(\"Bet has been placed successfully\", function () {\r",
