@@ -286,7 +286,6 @@
 						"id": "28362048-d774-4d36-8dc7-4591663d0504",
 						"exec": [
 							"var tmp = JSON.parse(responseBody);\r",
-							"console.log(tmp);\r",
 							"\r",
 							"var result = tmp.result;\r",
 							"var tmpbalance = result.balance;\r",
