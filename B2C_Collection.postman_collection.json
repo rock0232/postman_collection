@@ -1393,7 +1393,7 @@
 					"response": []
 				},
 				{
-					"name": "Run_Balance",
+					"name": "Umpire_Balance",
 					"event": [
 						{
 							"listen": "test",
@@ -1448,7 +1448,7 @@
 					"response": []
 				},
 				{
-					"name": "Run_PlaceBet",
+					"name": "Umpire_PlaceBet",
 					"event": [
 						{
 							"listen": "test",
@@ -1514,7 +1514,7 @@
 					"response": []
 				},
 				{
-					"name": "Run_UpdatedBalance",
+					"name": "Umpire_UpdatedBalance",
 					"event": [
 						{
 							"listen": "test",
@@ -1574,7 +1574,7 @@
 					"response": []
 				},
 				{
-					"name": "Run_GetallBetList",
+					"name": "Umpire_GetallBetList",
 					"event": [
 						{
 							"listen": "test",
