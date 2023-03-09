@@ -1208,7 +1208,7 @@
 					"response": []
 				},
 				{
-					"name": "Umpire_ActiveMarketList Copy",
+					"name": "Umpire_ActiveMarketList",
 					"event": [
 						{
 							"listen": "test",
