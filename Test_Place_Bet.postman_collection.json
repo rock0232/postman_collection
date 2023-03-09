@@ -287,7 +287,6 @@
 					"script": {
 						"exec": [
 							"var tmp = JSON.parse(responseBody);\r",
-							"console.log(tmp);\r",
 							"\r",
 							"var result = tmp.result;\r",
 							"var tmpbalance = result.balance;\r",
