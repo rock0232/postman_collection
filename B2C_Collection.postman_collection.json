@@ -404,102 +404,6 @@
 					"response": []
 				},
 				{
-					"name": "Hattrick_GetallBetList",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// var betid = pm.environment.get(\"tmpBet_ID\");\r",
-									"// var betdetailid = pm.environment.get(\"tmpBetDetailID\");\r",
-									"// var stake = pm.environment.get(\"tmpstake\");\r",
-									"// var auth = pm.environment.get(\"tmpAUTH_TOKEN\");\r",
-									"// var requestBody = pm.environment.get(\"tmprequestBody\");\r",
-									"// var myJSON = JSON.parse(requestBody);\r",
-									"\r",
-									"// var match_id = pm.environment.get(\"tmpBet_IDs\");\r",
-									"// var array = JSON.parse(\"[\" + match_id + \"]\");\r",
-									"// console.log(array[0][1])\r",
-									"// var i = 0;\r",
-									"// while(i < array[0].length ){\r",
-									"    \r",
-									"//     var requestData = {\r",
-									"//         // Add request data here\r",
-									"//         // For example:\r",
-									"//         method: \"POST\",\r",
-									"//         url: \"https://uatapib2c.cloudd.live/api/Bet/PlaceBet\",\r",
-									"//         header:{\r",
-									"//             Authorization: auth\r",
-									"//         },\r",
-									"//         body: myJSON\r",
-									"//     };\r",
-									"\r",
-									"//     postman.setNextRequest(\"PlaceBet\");\r",
-									"//     pm.sendRequest(requestData, function (err, response) {\r",
-									"//         // console.log(array[i]);\r",
-									"//     if (response.text().includes(\"successfully\")){\r",
-									"//         i = array[0].length; // break out of the loop    \r",
-									"//     }\r",
-									"//     });\r",
-									"//     i++;\r",
-									"// }\r",
-									"// console.log(myJSON)\r",
-									"\r",
-									"function cleanup() {\r",
-									"    const clean = _.keys(pm.environment.toObject())\r",
-									"    _.each(clean, (arrItem) => {\r",
-									"        if (arrItem.startsWith(\"tmp\")) {\r",
-									"            pm.environment.unset(arrItem)\r",
-									"        }\r",
-									"    })\r",
-									"};\r",
-									"cleanup()\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.environment.set(\"tmpstake\", 100);"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "{{tmp_hattrick_AUTH_TOKEN}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{Hattrick_URL}}Market/GetAllBetList",
-							"host": [
-								"{{Hattrick_URL}}Market"
-							],
-							"path": [
-								"GetAllBetList"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Hattrick_UpdatedBalance",
 					"event": [
 						{
@@ -554,6 +458,67 @@
 							"path": [
 								"Client",
 								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hattrick_GetallBetList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"function cleanup() {\r",
+									"    const clean = _.keys(pm.environment.toObject())\r",
+									"    _.each(clean, (arrItem) => {\r",
+									"        if (arrItem.startsWith(\"tmp\")) {\r",
+									"            pm.environment.unset(arrItem)\r",
+									"        }\r",
+									"    })\r",
+									"};\r",
+									"cleanup()\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_hattrick_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Hattrick_URL}}Market/GetAllBetList",
+							"host": [
+								"{{Hattrick_URL}}Market"
+							],
+							"path": [
+								"GetAllBetList"
 							]
 						}
 					},
