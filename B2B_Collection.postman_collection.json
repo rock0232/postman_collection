@@ -996,6 +996,3941 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "ABDEXCH_TEST_PLACE_BET",
+			"item": [
+				{
+					"name": "Abdexch_Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Barrier Token To Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"tmp_abdexch_AUTH_TOKEN\", \"bearer \"+ jsonData.result.access_token);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"postman.setNextRequest(\"Abdexch_SetRealBalanceUse\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "sitename",
+								"value": "{{ABDEXCH_sitename}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"rocktest\",\r\n    \"password\": \"Rock@1234\",\r\n    \"deviceinfo\": \"strModel:vivo - vivo 1716\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ABDEXCH_URL}}Account/AppLogin",
+							"host": [
+								"{{ABDEXCH_URL}}Account"
+							],
+							"path": [
+								"AppLogin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Abdexch_SetRealBalanceUse",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"Abdexch_ActiveMarketList\");\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_abdexch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ABDEXCH_URL}}Account/SetRealBalanceUse",
+							"host": [
+								"{{ABDEXCH_URL}}Account"
+							],
+							"path": [
+								"SetRealBalanceUse"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Abdexch_ActiveMarketList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Match (Event) Id Into Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var matchedIds = [];\r",
+									"var BetID = [];\r",
+									"\r",
+									"getmatchid.forEach(function(item) {\r",
+									"    if (item.mn === \"TO WIN THE TOSS\") {\r",
+									"        BetID.push(item.mid);\r",
+									"        matchedIds.push(item.eid);\r",
+									"    }\r",
+									"});\r",
+									"pm.environment.set(\"tmp_abdexch_Bet_IDs\", JSON.stringify(BetID));\r",
+									"pm.environment.set(\"tmp_abdexch_Match_IDs\", JSON.stringify(matchedIds));\r",
+									"\r",
+									"postman.setNextRequest(\"Abdexch_GetMatchwiseMarketinfo\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_abdexch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{ABDEXCH_URL}}Market/ActiveMarketList",
+							"host": [
+								"{{ABDEXCH_URL}}Market"
+							],
+							"path": [
+								"ActiveMarketList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Abdexch_GetMatchwiseMarketinfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Bet Id In Environment variable\r",
+									"var match_id = pm.environment.get(\"tmp_abdexch_Bet_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_abdexch_Bet_ID\", array[0][0]);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Abdexch_GetEventWiseMarketInfo\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var match_id = pm.environment.get(\"tmp_abdexch_Match_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_abdexch_Match_ID\", array[0][1]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_abdexch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ABDEXCH_URL}}Market/GetMatchWiseMarketInfo?matchId={{tmp_abdexch_Match_ID}}",
+							"host": [
+								"{{ABDEXCH_URL}}Market"
+							],
+							"path": [
+								"GetMatchWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_abdexch_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Abdexch_GetEventWiseMarketInfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var runinfo = getmatchid.runnerInfo;\r",
+									"pm.environment.set(\"tmp_abdexch_BetDetailID\", JSON.stringify(runinfo[3].rid));\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Abdexch_Balance\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_abdexch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ABDEXCH_URL}}Market/GetEventWiseMarketInfo?matchId={{tmp_abdexch_Match_ID}}",
+							"host": [
+								"{{ABDEXCH_URL}}Market"
+							],
+							"path": [
+								"GetEventWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_abdexch_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Abdexch_Balance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var tmp = JSON.parse(responseBody);\r",
+									"\r",
+									"var result = tmp.result;\r",
+									"var tmpbalance = result.balance;\r",
+									"var tmpliability = result.liability;\r",
+									"\r",
+									"pm.environment.set(\"tmp_abdexch_balance\", tmpbalance);\r",
+									"pm.environment.set(\"tmp_abdexch_liability\", tmpliability);\r",
+									"\r",
+									"postman.setNextRequest(\"Abdexch_PlaceBet\");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_abdexch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ABDEXCH_URL}}Chip/Client/Balance",
+							"host": [
+								"{{ABDEXCH_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Abdexch_PlaceBet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Bet has been placed successfully\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"true;Bet has been placed successfully.\");\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Abdexch_UpdatedBalance\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"tmp_abdexch_stake\", 100);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_abdexch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"BetId\": {{tmp_abdexch_Bet_ID}},\r\n  \"BetDetailId\": {{tmp_abdexch_BetDetailID}},\r\n  \"IsBack\": true,\r\n  \"Rate\": 1.97,\r\n  \"Stake\": {{tmp_abdexch_stake}},\r\n  \"Fancytype\": 10,\r\n  \"Point\": 1.97,\r\n  \"placeFrom\": 1,\r\n  \"deviceinfo\": \"browser=Chrome:: device=Desktop:: os=Windows:: latitude=0 :: longitude=0\",\r\n  \"isWager\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ABDEXCH_URL}}Bet/PlaceBet",
+							"host": [
+								"{{ABDEXCH_URL}}Bet"
+							],
+							"path": [
+								"PlaceBet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Abdexch_UpdatedBalance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"var balance = pm.environment.get(\"tmp_abdexch_balance\");\r",
+									"var stake = pm.environment.get(\"tmp_abdexch_stake\");\r",
+									"var liability = pm.environment.get(\"tmp_abdexch_liability\");\r",
+									"var result = response.result;\r",
+									"var tmpupdatebalance = balance - stake;\r",
+									"var tmpupdateliability = liability - stake;\r",
+									"pm.test(\"Wallet balance is Updated\", function(){\r",
+									"\tpm.expect(result.balance).to.eql(tmpupdatebalance)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Liability is Updated\", function(){\r",
+									"\tpm.expect(result.liability).to.eql(tmpupdateliability)\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Abdexch_GetallBetList\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_abdexch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ABDEXCH_URL}}Chip/Client/Balance",
+							"host": [
+								"{{ABDEXCH_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Abdexch_GetallBetList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"function cleanup() {\r",
+									"    const clean = _.keys(pm.environment.toObject())\r",
+									"    _.each(clean, (arrItem) => {\r",
+									"        if (arrItem.startsWith(\"tmp\")) {\r",
+									"            pm.environment.unset(arrItem)\r",
+									"        }\r",
+									"    })\r",
+									"};\r",
+									"cleanup()\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_abdexch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ABDEXCH_URL}}Market/GetAllBetList",
+							"host": [
+								"{{ABDEXCH_URL}}Market"
+							],
+							"path": [
+								"GetAllBetList"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "BADABET_TEST_PLACE_BET",
+			"item": [
+				{
+					"name": "Badabet_Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Barrier Token To Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"tmp_badabet_AUTH_TOKEN\", \"bearer \"+ jsonData.result.access_token);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"postman.setNextRequest(\"Badabet_SetRealBalanceUse\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "sitename",
+								"value": "{{BADABET_sitename}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"rocktest\",\r\n    \"password\": \"Rock@1234\",\r\n    \"deviceinfo\": \"strModel:vivo - vivo 1716\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BADABET_URL}}Account/AppLogin",
+							"host": [
+								"{{BADABET_URL}}Account"
+							],
+							"path": [
+								"AppLogin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Badabet_SetRealBalanceUse",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"Badabet_ActiveMarketList\");\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_badabet_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BADABET_URL}}Account/SetRealBalanceUse",
+							"host": [
+								"{{BADABET_URL}}Account"
+							],
+							"path": [
+								"SetRealBalanceUse"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Badabet_ActiveMarketList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Match (Event) Id Into Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var matchedIds = [];\r",
+									"var BetID = [];\r",
+									"\r",
+									"getmatchid.forEach(function (item) {\r",
+									"    if (item.mn === \"TO WIN THE TOSS\") {\r",
+									"        BetID.push(item.mid);\r",
+									"        matchedIds.push(item.eid);\r",
+									"    }\r",
+									"});\r",
+									"pm.environment.set(\"tmp_badabet_Bet_IDs\", JSON.stringify(BetID));\r",
+									"pm.environment.set(\"tmp_badabet_Match_IDs\", JSON.stringify(matchedIds));\r",
+									"\r",
+									"postman.setNextRequest(\"Badabet_GetMatchwiseMarketinfo\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_badabet_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{BADABET_URL}}Market/ActiveMarketList",
+							"host": [
+								"{{BADABET_URL}}Market"
+							],
+							"path": [
+								"ActiveMarketList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Badabet_GetMatchwiseMarketinfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Bet Id In Environment variable\r",
+									"var match_id = pm.environment.get(\"tmp_badabet_Bet_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_badabet_Bet_ID\", array[0][0]);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Badabet_GetEventWiseMarketInfo\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var match_id = pm.environment.get(\"tmp_badabet_Match_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_badabet_Match_ID\", array[0][1]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_badabet_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BADABET_URL}}Market/GetMatchWiseMarketInfo?matchId={{tmp_badabet_Match_ID}}",
+							"host": [
+								"{{BADABET_URL}}Market"
+							],
+							"path": [
+								"GetMatchWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_badabet_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Badabet_GetEventWiseMarketInfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var runinfo = getmatchid.runnerInfo;\r",
+									"pm.environment.set(\"tmp_badabet_BetDetailID\", JSON.stringify(runinfo[3].rid));\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Badabet_Balance\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_badabet_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BADABET_URL}}Market/GetEventWiseMarketInfo?matchId={{tmp_badabet_Match_ID}}",
+							"host": [
+								"{{BADABET_URL}}Market"
+							],
+							"path": [
+								"GetEventWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_badabet_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Badabet_Balance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var tmp = JSON.parse(responseBody);\r",
+									"\r",
+									"var result = tmp.result;\r",
+									"var tmpbalance = result.balance;\r",
+									"var tmpliability = result.liability;\r",
+									"\r",
+									"pm.environment.set(\"tmp_badabet_balance\", tmpbalance);\r",
+									"pm.environment.set(\"tmp_badabet_liability\", tmpliability);\r",
+									"\r",
+									"postman.setNextRequest(\"Badabet_PlaceBet\");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_badabet_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BADABET_URL}}Chip/Client/Balance",
+							"host": [
+								"{{BADABET_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Badabet_PlaceBet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Bet has been placed successfully\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"true;Bet has been placed successfully.\");\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Badabet_UpdatedBalance\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"tmp_badabet_stake\", 100);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_badabet_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"BetId\": {{tmp_badabet_Bet_ID}},\r\n  \"BetDetailId\": {{tmp_badabet_BetDetailID}},\r\n  \"IsBack\": true,\r\n  \"Rate\": 1.97,\r\n  \"Stake\": {{tmp_badabet_stake}},\r\n  \"Fancytype\": 10,\r\n  \"Point\": 1.97,\r\n  \"placeFrom\": 1,\r\n  \"deviceinfo\": \"browser=Chrome:: device=Desktop:: os=Windows:: latitude=0 :: longitude=0\",\r\n  \"isWager\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BADABET_URL}}Bet/PlaceBet",
+							"host": [
+								"{{BADABET_URL}}Bet"
+							],
+							"path": [
+								"PlaceBet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Badabet_UpdatedBalance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"var balance = pm.environment.get(\"tmp_badabet_balance\");\r",
+									"var stake = pm.environment.get(\"tmp_badabet_stake\");\r",
+									"var liability = pm.environment.get(\"tmp_badabet_liability\");\r",
+									"var result = response.result;\r",
+									"var tmpupdatebalance = balance - stake;\r",
+									"var tmpupdateliability = liability - stake;\r",
+									"pm.test(\"Wallet balance is Updated\", function(){\r",
+									"\tpm.expect(result.balance).to.eql(tmpupdatebalance)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Liability is Updated\", function(){\r",
+									"\tpm.expect(result.liability).to.eql(tmpupdateliability)\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Badabet_GetallBetList\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_badabet_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BADABET_URL}}Chip/Client/Balance",
+							"host": [
+								"{{BADABET_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Badabet_GetallBetList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"function cleanup() {\r",
+									"    const clean = _.keys(pm.environment.toObject())\r",
+									"    _.each(clean, (arrItem) => {\r",
+									"        if (arrItem.startsWith(\"tmp\")) {\r",
+									"            pm.environment.unset(arrItem)\r",
+									"        }\r",
+									"    })\r",
+									"};\r",
+									"cleanup()\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_badabet_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BADABET_URL}}Market/GetAllBetList",
+							"host": [
+								"{{BADABET_URL}}Market"
+							],
+							"path": [
+								"GetAllBetList"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "INFINITYEXCH_TEST_PLACE_BET",
+			"item": [
+				{
+					"name": "Infinityexch_Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Barrier Token To Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"tmp_infinityexch_AUTH_TOKEN\", \"bearer \"+ jsonData.result.access_token);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"postman.setNextRequest(\"Infinityexch_SetRealBalanceUse\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "sitename",
+								"value": "{{INFINITY_sitename}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"rocktest\",\r\n    \"password\": \"Rock@1234\",\r\n    \"deviceinfo\": \"strModel:vivo - vivo 1716\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{INFINITY_URL}}Account/AppLogin",
+							"host": [
+								"{{INFINITY_URL}}Account"
+							],
+							"path": [
+								"AppLogin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Infinityexch_SetRealBalanceUse",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"Infinityexch_ActiveMarketList\");\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_infinityexch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{INFINITY_URL}}Account/SetRealBalanceUse",
+							"host": [
+								"{{INFINITY_URL}}Account"
+							],
+							"path": [
+								"SetRealBalanceUse"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Infinityexch_ActiveMarketList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Match (Event) Id Into Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var matchedIds = [];\r",
+									"var BetID = [];\r",
+									"\r",
+									"getmatchid.forEach(function (item) {\r",
+									"    if (item.mn === \"TO WIN THE TOSS\") {\r",
+									"        BetID.push(item.mid);\r",
+									"        matchedIds.push(item.eid);\r",
+									"    }\r",
+									"});\r",
+									"pm.environment.set(\"tmp_infinityexch_Bet_IDs\", JSON.stringify(BetID));\r",
+									"pm.environment.set(\"tmp_infinityexch_Match_IDs\", JSON.stringify(matchedIds));\r",
+									"\r",
+									"postman.setNextRequest(\"Infinityexch_GetMatchwiseMarketinfo\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_infinityexch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{INFINITY_URL}}Market/ActiveMarketList",
+							"host": [
+								"{{INFINITY_URL}}Market"
+							],
+							"path": [
+								"ActiveMarketList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Infinityexch_GetMatchwiseMarketinfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Bet Id In Environment variable\r",
+									"var match_id = pm.environment.get(\"tmp_infinityexch_Bet_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_infinityexch_Bet_ID\", array[0][0]);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Infinityexch_GetEventWiseMarketInfo\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var match_id = pm.environment.get(\"tmp_infinityexch_Match_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_infinityexch_Match_ID\", array[0][1]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_infinityexch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{INFINITY_URL}}Market/GetMatchWiseMarketInfo?matchId={{tmp_infinityexch_Match_ID}}",
+							"host": [
+								"{{INFINITY_URL}}Market"
+							],
+							"path": [
+								"GetMatchWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_infinityexch_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Infinityexch_GetEventWiseMarketInfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var runinfo = getmatchid.runnerInfo;\r",
+									"pm.environment.set(\"tmp_infinityexch_BetDetailID\", JSON.stringify(runinfo[3].rid));\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Infinityexch_Balance\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_infinityexch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{INFINITY_URL}}Market/GetEventWiseMarketInfo?matchId={{tmp_infinityexch_Match_ID}}",
+							"host": [
+								"{{INFINITY_URL}}Market"
+							],
+							"path": [
+								"GetEventWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_infinityexch_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Infinityexch_Balance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var tmp = JSON.parse(responseBody);\r",
+									"\r",
+									"var result = tmp.result;\r",
+									"var tmpbalance = result.balance;\r",
+									"var tmpliability = result.liability;\r",
+									"\r",
+									"pm.environment.set(\"tmp_infinityexch_balance\", tmpbalance);\r",
+									"pm.environment.set(\"tmp_infinityexch_liability\", tmpliability);\r",
+									"\r",
+									"postman.setNextRequest(\"Infinityexch_PlaceBet\");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_infinityexch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{INFINITY_URL}}Chip/Client/Balance",
+							"host": [
+								"{{INFINITY_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Infinityexch_PlaceBet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Bet has been placed successfully\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"true;Bet has been placed successfully.\");\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Infinityexch_UpdatedBalance\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"tmp_infinityexch_stake\", 100);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_infinityexch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"BetId\": {{tmp_infinityexch_Bet_ID}},\r\n  \"BetDetailId\": {{tmp_infinityexch_BetDetailID}},\r\n  \"IsBack\": true,\r\n  \"Rate\": 1.97,\r\n  \"Stake\": {{tmp_infinityexch_stake}},\r\n  \"Fancytype\": 10,\r\n  \"Point\": 1.97,\r\n  \"placeFrom\": 1,\r\n  \"deviceinfo\": \"browser=Chrome:: device=Desktop:: os=Windows:: latitude=0 :: longitude=0\",\r\n  \"isWager\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{INFINITY_URL}}Bet/PlaceBet",
+							"host": [
+								"{{INFINITY_URL}}Bet"
+							],
+							"path": [
+								"PlaceBet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Infinityexch_UpdatedBalance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"var balance = pm.environment.get(\"tmp_infinityexch_balance\");\r",
+									"var stake = pm.environment.get(\"tmp_infinityexch_stake\");\r",
+									"var liability = pm.environment.get(\"tmp_infinityexch_liability\");\r",
+									"var result = response.result;\r",
+									"var tmpupdatebalance = balance - stake;\r",
+									"var tmpupdateliability = liability - stake;\r",
+									"pm.test(\"Wallet balance is Updated\", function(){\r",
+									"\tpm.expect(result.balance).to.eql(tmpupdatebalance)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Liability is Updated\", function(){\r",
+									"\tpm.expect(result.liability).to.eql(tmpupdateliability)\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Infinityexch_GetallBetList\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_infinityexch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{INFINITY_URL}}Chip/Client/Balance",
+							"host": [
+								"{{INFINITY_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Infinityexch_GetallBetList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"function cleanup() {\r",
+									"    const clean = _.keys(pm.environment.toObject())\r",
+									"    _.each(clean, (arrItem) => {\r",
+									"        if (arrItem.startsWith(\"tmp\")) {\r",
+									"            pm.environment.unset(arrItem)\r",
+									"        }\r",
+									"    })\r",
+									"};\r",
+									"cleanup()\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_infinityexch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{INFINITY_URL}}Market/GetAllBetList",
+							"host": [
+								"{{INFINITY_URL}}Market"
+							],
+							"path": [
+								"GetAllBetList"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "USER365_TEST_PLACE_BET",
+			"item": [
+				{
+					"name": "User365day_Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Barrier Token To Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"tmp_user365day_AUTH_TOKEN\", \"bearer \"+ jsonData.result.access_token);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"postman.setNextRequest(\"User365day_SetRealBalanceUse\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "sitename",
+								"value": "{{USER365_sitename}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"rocktest\",\r\n    \"password\": \"Rock@1234\",\r\n    \"deviceinfo\": \"strModel:vivo - vivo 1716\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{USER365_URL}}Account/AppLogin",
+							"host": [
+								"{{USER365_URL}}Account"
+							],
+							"path": [
+								"AppLogin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User365day_SetRealBalanceUse",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"User365day_ActiveMarketList\");\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_user365day_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{USER365_URL}}Account/SetRealBalanceUse",
+							"host": [
+								"{{USER365_URL}}Account"
+							],
+							"path": [
+								"SetRealBalanceUse"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User365day_ActiveMarketList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Match (Event) Id Into Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var matchedIds = [];\r",
+									"var BetID = [];\r",
+									"\r",
+									"getmatchid.forEach(function (item) {\r",
+									"    if (item.mn === \"TO WIN THE TOSS\") {\r",
+									"        BetID.push(item.mid);\r",
+									"        matchedIds.push(item.eid);\r",
+									"    }\r",
+									"});\r",
+									"pm.environment.set(\"tmp_user365day_Bet_IDs\", JSON.stringify(BetID));\r",
+									"pm.environment.set(\"tmp_user365day_Match_IDs\", JSON.stringify(matchedIds));\r",
+									"\r",
+									"postman.setNextRequest(\"User365day_GetMatchwiseMarketinfo\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_user365day_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{USER365_URL}}Market/ActiveMarketList",
+							"host": [
+								"{{USER365_URL}}Market"
+							],
+							"path": [
+								"ActiveMarketList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User365day_GetMatchwiseMarketinfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Bet Id In Environment variable\r",
+									"var match_id = pm.environment.get(\"tmp_user365day_Bet_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_user365day_Bet_ID\", array[0][0]);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"User365day_GetEventWiseMarketInfo\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var match_id = pm.environment.get(\"tmp_user365day_Match_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_user365day_Match_ID\", array[0][1]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_user365day_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{USER365_URL}}Market/GetMatchWiseMarketInfo?matchId={{tmp_user365day_Match_ID}}",
+							"host": [
+								"{{USER365_URL}}Market"
+							],
+							"path": [
+								"GetMatchWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_user365day_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User365day_GetEventWiseMarketInfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var runinfo = getmatchid.runnerInfo;\r",
+									"pm.environment.set(\"tmp_user365day_BetDetailID\", JSON.stringify(runinfo[3].rid));\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"User365day_Balance\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_user365day_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{USER365_URL}}Market/GetEventWiseMarketInfo?matchId={{tmp_user365day_Match_ID}}",
+							"host": [
+								"{{USER365_URL}}Market"
+							],
+							"path": [
+								"GetEventWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_user365day_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User365day_Balance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var tmp = JSON.parse(responseBody);\r",
+									"\r",
+									"var result = tmp.result;\r",
+									"var tmpbalance = result.balance;\r",
+									"var tmpliability = result.liability;\r",
+									"\r",
+									"pm.environment.set(\"tmp_user365day_balance\", tmpbalance);\r",
+									"pm.environment.set(\"tmp_user365day_liability\", tmpliability);\r",
+									"\r",
+									"postman.setNextRequest(\"User365day_PlaceBet\");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_user365day_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{USER365_URL}}Chip/Client/Balance",
+							"host": [
+								"{{USER365_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User365day_PlaceBet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Bet has been placed successfully\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"true;Bet has been placed successfully.\");\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"User365day_UpdatedBalance\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"tmp_user365day_stake\", 100);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_user365day_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"BetId\": {{tmp_user365day_Bet_ID}},\r\n  \"BetDetailId\": {{tmp_user365day_BetDetailID}},\r\n  \"IsBack\": true,\r\n  \"Rate\": 1.97,\r\n  \"Stake\": {{tmp_user365day_stake}},\r\n  \"Fancytype\": 10,\r\n  \"Point\": 1.97,\r\n  \"placeFrom\": 1,\r\n  \"deviceinfo\": \"browser=Chrome:: device=Desktop:: os=Windows:: latitude=0 :: longitude=0\",\r\n  \"isWager\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{USER365_URL}}Bet/PlaceBet",
+							"host": [
+								"{{USER365_URL}}Bet"
+							],
+							"path": [
+								"PlaceBet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User365day_UpdatedBalance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"var balance = pm.environment.get(\"tmp_user365day_balance\");\r",
+									"var stake = pm.environment.get(\"tmp_user365day_stake\");\r",
+									"var liability = pm.environment.get(\"tmp_user365day_liability\");\r",
+									"var result = response.result;\r",
+									"var tmpupdatebalance = balance - stake;\r",
+									"var tmpupdateliability = liability - stake;\r",
+									"pm.test(\"Wallet balance is Updated\", function(){\r",
+									"\tpm.expect(result.balance).to.eql(tmpupdatebalance)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Liability is Updated\", function(){\r",
+									"\tpm.expect(result.liability).to.eql(tmpupdateliability)\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"User365day_GetallBetList\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_user365day_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{USER365_URL}}Chip/Client/Balance",
+							"host": [
+								"{{USER365_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User365day_GetallBetList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"function cleanup() {\r",
+									"    const clean = _.keys(pm.environment.toObject())\r",
+									"    _.each(clean, (arrItem) => {\r",
+									"        if (arrItem.startsWith(\"tmp\")) {\r",
+									"            pm.environment.unset(arrItem)\r",
+									"        }\r",
+									"    })\r",
+									"};\r",
+									"cleanup()\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_user365day_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{USER365_URL}}Market/GetAllBetList",
+							"host": [
+								"{{USER365_URL}}Market"
+							],
+							"path": [
+								"GetAllBetList"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ONLY333_TEST_PLACE_BET",
+			"item": [
+				{
+					"name": "Only333_Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Barrier Token To Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"tmp_only333_AUTH_TOKEN\", \"bearer \"+ jsonData.result.access_token);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"postman.setNextRequest(\"Only333_SetRealBalanceUse\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "sitename",
+								"value": "{{ONLY333_sitename}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"rocktest\",\r\n    \"password\": \"Rock@1234\",\r\n    \"deviceinfo\": \"strModel:vivo - vivo 1716\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ONLY333_URL}}Account/AppLogin",
+							"host": [
+								"{{ONLY333_URL}}Account"
+							],
+							"path": [
+								"AppLogin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Only333_SetRealBalanceUse",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"Only333_ActiveMarketList\");\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_only333_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ONLY333_URL}}Account/SetRealBalanceUse",
+							"host": [
+								"{{ONLY333_URL}}Account"
+							],
+							"path": [
+								"SetRealBalanceUse"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Only333_ActiveMarketList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Match (Event) Id Into Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var matchedIds = [];\r",
+									"var BetID = [];\r",
+									"\r",
+									"getmatchid.forEach(function (item) {\r",
+									"    if (item.mn === \"TO WIN THE TOSS\") {\r",
+									"        BetID.push(item.mid);\r",
+									"        matchedIds.push(item.eid);\r",
+									"    }\r",
+									"});\r",
+									"pm.environment.set(\"tmp_only333_Bet_IDs\", JSON.stringify(BetID));\r",
+									"pm.environment.set(\"tmp_only333_Match_IDs\", JSON.stringify(matchedIds));\r",
+									"\r",
+									"postman.setNextRequest(\"Only333_GetMatchwiseMarketinfo\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_only333_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{ONLY333_URL}}Market/ActiveMarketList",
+							"host": [
+								"{{ONLY333_URL}}Market"
+							],
+							"path": [
+								"ActiveMarketList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Only333_GetMatchwiseMarketinfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Bet Id In Environment variable\r",
+									"var match_id = pm.environment.get(\"tmp_only333_Bet_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_only333_Bet_ID\", array[0][0]);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Only333_GetEventWiseMarketInfo\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var match_id = pm.environment.get(\"tmp_only333_Match_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_only333_Match_ID\", array[0][1]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_only333_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ONLY333_URL}}Market/GetMatchWiseMarketInfo?matchId={{tmp_only333_Match_ID}}",
+							"host": [
+								"{{ONLY333_URL}}Market"
+							],
+							"path": [
+								"GetMatchWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_only333_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Only333_GetEventWiseMarketInfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var runinfo = getmatchid.runnerInfo;\r",
+									"pm.environment.set(\"tmp_only333_BetDetailID\", JSON.stringify(runinfo[3].rid));\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Only333_Balance\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_only333_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ONLY333_URL}}Market/GetEventWiseMarketInfo?matchId={{tmp_only333_Match_ID}}",
+							"host": [
+								"{{ONLY333_URL}}Market"
+							],
+							"path": [
+								"GetEventWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_only333_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Only333_Balance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var tmp = JSON.parse(responseBody);\r",
+									"\r",
+									"var result = tmp.result;\r",
+									"var tmpbalance = result.balance;\r",
+									"var tmpliability = result.liability;\r",
+									"\r",
+									"pm.environment.set(\"tmp_only333_balance\", tmpbalance);\r",
+									"pm.environment.set(\"tmp_only333_liability\", tmpliability);\r",
+									"\r",
+									"postman.setNextRequest(\"Only333_PlaceBet\");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_only333_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ONLY333_URL}}Chip/Client/Balance",
+							"host": [
+								"{{ONLY333_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Only333_PlaceBet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Bet has been placed successfully\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"true;Bet has been placed successfully.\");\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Only333_UpdatedBalance\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"tmp_only333_stake\", 100);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_only333_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"BetId\": {{tmp_only333_Bet_ID}},\r\n  \"BetDetailId\": {{tmp_only333_BetDetailID}},\r\n  \"IsBack\": true,\r\n  \"Rate\": 1.97,\r\n  \"Stake\": {{tmp_only333_stake}},\r\n  \"Fancytype\": 10,\r\n  \"Point\": 1.97,\r\n  \"placeFrom\": 1,\r\n  \"deviceinfo\": \"browser=Chrome:: device=Desktop:: os=Windows:: latitude=0 :: longitude=0\",\r\n  \"isWager\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ONLY333_URL}}Bet/PlaceBet",
+							"host": [
+								"{{ONLY333_URL}}Bet"
+							],
+							"path": [
+								"PlaceBet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Only333_UpdatedBalance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"var balance = pm.environment.get(\"tmp_only333_balance\");\r",
+									"var stake = pm.environment.get(\"tmp_only333_stake\");\r",
+									"var liability = pm.environment.get(\"tmp_only333_liability\");\r",
+									"var result = response.result;\r",
+									"var tmpupdatebalance = balance - stake;\r",
+									"var tmpupdateliability = liability - stake;\r",
+									"pm.test(\"Wallet balance is Updated\", function(){\r",
+									"\tpm.expect(result.balance).to.eql(tmpupdatebalance)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Liability is Updated\", function(){\r",
+									"\tpm.expect(result.liability).to.eql(tmpupdateliability)\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Only333_GetallBetList\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_only333_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ONLY333_URL}}Chip/Client/Balance",
+							"host": [
+								"{{ONLY333_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Only333_GetallBetList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"function cleanup() {\r",
+									"    const clean = _.keys(pm.environment.toObject())\r",
+									"    _.each(clean, (arrItem) => {\r",
+									"        if (arrItem.startsWith(\"tmp\")) {\r",
+									"            pm.environment.unset(arrItem)\r",
+									"        }\r",
+									"    })\r",
+									"};\r",
+									"cleanup()\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_only333_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ONLY333_URL}}Market/GetAllBetList",
+							"host": [
+								"{{ONLY333_URL}}Market"
+							],
+							"path": [
+								"GetAllBetList"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PK7EXCH_TEST_PLACE_BET",
+			"item": [
+				{
+					"name": "Pk7exch_Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Barrier Token To Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"tmp_pk7exch_AUTH_TOKEN\", \"bearer \"+ jsonData.result.access_token);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"postman.setNextRequest(\"Pk7exch_SetRealBalanceUse\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "sitename",
+								"value": "{{PK7EXCH_sitename}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"rocktest\",\r\n    \"password\": \"Rock@1234\",\r\n    \"deviceinfo\": \"strModel:vivo - vivo 1716\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{PK7EXCH_URL}}Account/AppLogin",
+							"host": [
+								"{{PK7EXCH_URL}}Account"
+							],
+							"path": [
+								"AppLogin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pk7exch_SetRealBalanceUse",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"Pk7exch_ActiveMarketList\");\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_pk7exch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{PK7EXCH_URL}}Account/SetRealBalanceUse",
+							"host": [
+								"{{PK7EXCH_URL}}Account"
+							],
+							"path": [
+								"SetRealBalanceUse"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pk7exch_ActiveMarketList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Match (Event) Id Into Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var matchedIds = [];\r",
+									"var BetID = [];\r",
+									"\r",
+									"getmatchid.forEach(function (item) {\r",
+									"    if (item.mn === \"TO WIN THE TOSS\") {\r",
+									"        BetID.push(item.mid);\r",
+									"        matchedIds.push(item.eid);\r",
+									"    }\r",
+									"});\r",
+									"pm.environment.set(\"tmp_pk7exch_Bet_IDs\", JSON.stringify(BetID));\r",
+									"pm.environment.set(\"tmp_pk7exch_Match_IDs\", JSON.stringify(matchedIds));\r",
+									"\r",
+									"postman.setNextRequest(\"Pk7exch_GetMatchwiseMarketinfo\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_pk7exch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{PK7EXCH_URL}}Market/ActiveMarketList",
+							"host": [
+								"{{PK7EXCH_URL}}Market"
+							],
+							"path": [
+								"ActiveMarketList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pk7exch_GetMatchwiseMarketinfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Bet Id In Environment variable\r",
+									"var match_id = pm.environment.get(\"tmp_pk7exch_Bet_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_pk7exch_Bet_ID\", array[0][0]);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Pk7exch_GetEventWiseMarketInfo\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var match_id = pm.environment.get(\"tmp_pk7exch_Match_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_pk7exch_Match_ID\", array[0][1]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_pk7exch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{PK7EXCH_URL}}Market/GetMatchWiseMarketInfo?matchId={{tmp_pk7exch_Match_ID}}",
+							"host": [
+								"{{PK7EXCH_URL}}Market"
+							],
+							"path": [
+								"GetMatchWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_pk7exch_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pk7exch_GetEventWiseMarketInfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var runinfo = getmatchid.runnerInfo;\r",
+									"pm.environment.set(\"tmp_pk7exch_BetDetailID\", JSON.stringify(runinfo[3].rid));\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Pk7exch_Balance\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_pk7exch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{PK7EXCH_URL}}Market/GetEventWiseMarketInfo?matchId={{tmp_pk7exch_Match_ID}}",
+							"host": [
+								"{{PK7EXCH_URL}}Market"
+							],
+							"path": [
+								"GetEventWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_pk7exch_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pk7exch_Balance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var tmp = JSON.parse(responseBody);\r",
+									"\r",
+									"var result = tmp.result;\r",
+									"var tmpbalance = result.balance;\r",
+									"var tmpliability = result.liability;\r",
+									"\r",
+									"pm.environment.set(\"tmp_pk7exch_balance\", tmpbalance);\r",
+									"pm.environment.set(\"tmp_pk7exch_liability\", tmpliability);\r",
+									"\r",
+									"postman.setNextRequest(\"Pk7exch_PlaceBet\");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_pk7exch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{PK7EXCH_URL}}Chip/Client/Balance",
+							"host": [
+								"{{PK7EXCH_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pk7exch_PlaceBet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Bet has been placed successfully\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"true;Bet has been placed successfully.\");\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Pk7exch_UpdatedBalance\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"tmp_pk7exch_stake\", 100);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_pk7exch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"BetId\": {{tmp_pk7exch_Bet_ID}},\r\n  \"BetDetailId\": {{tmp_pk7exch_BetDetailID}},\r\n  \"IsBack\": true,\r\n  \"Rate\": 1.97,\r\n  \"Stake\": {{tmp_pk7exch_stake}},\r\n  \"Fancytype\": 10,\r\n  \"Point\": 1.97,\r\n  \"placeFrom\": 1,\r\n  \"deviceinfo\": \"browser=Chrome:: device=Desktop:: os=Windows:: latitude=0 :: longitude=0\",\r\n  \"isWager\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{PK7EXCH_URL}}Bet/PlaceBet",
+							"host": [
+								"{{PK7EXCH_URL}}Bet"
+							],
+							"path": [
+								"PlaceBet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pk7exch_UpdatedBalance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"var balance = pm.environment.get(\"tmp_pk7exch_balance\");\r",
+									"var stake = pm.environment.get(\"tmp_pk7exch_stake\");\r",
+									"var liability = pm.environment.get(\"tmp_pk7exch_liability\");\r",
+									"var result = response.result;\r",
+									"var tmpupdatebalance = balance - stake;\r",
+									"var tmpupdateliability = liability - stake;\r",
+									"pm.test(\"Wallet balance is Updated\", function(){\r",
+									"\tpm.expect(result.balance).to.eql(tmpupdatebalance)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Liability is Updated\", function(){\r",
+									"\tpm.expect(result.liability).to.eql(tmpupdateliability)\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Pk7exch_GetallBetList\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_pk7exch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{PK7EXCH_URL}}Chip/Client/Balance",
+							"host": [
+								"{{PK7EXCH_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pk7exch_GetallBetList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"function cleanup() {\r",
+									"    const clean = _.keys(pm.environment.toObject())\r",
+									"    _.each(clean, (arrItem) => {\r",
+									"        if (arrItem.startsWith(\"tmp\")) {\r",
+									"            pm.environment.unset(arrItem)\r",
+									"        }\r",
+									"    })\r",
+									"};\r",
+									"cleanup()\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_pk7exch_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{PK7EXCH_URL}}Market/GetAllBetList",
+							"host": [
+								"{{PK7EXCH_URL}}Market"
+							],
+							"path": [
+								"GetAllBetList"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GAMEX24_TEST_PLACE_BET",
+			"item": [
+				{
+					"name": "Gamex24_Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Barrier Token To Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"tmp_gamex24_AUTH_TOKEN\", \"bearer \"+ jsonData.result.access_token);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"postman.setNextRequest(\"Gamex24_SetRealBalanceUse\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "sitename",
+								"value": "{{GAMEX24_sitename}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"rocktest\",\r\n    \"password\": \"Rock@1234\",\r\n    \"deviceinfo\": \"strModel:vivo - vivo 1716\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{GAMEX24_URL}}Account/AppLogin",
+							"host": [
+								"{{GAMEX24_URL}}Account"
+							],
+							"path": [
+								"AppLogin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gamex24_SetRealBalanceUse",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"Gamex24_ActiveMarketList\");\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_gamex24_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{GAMEX24_URL}}Account/SetRealBalanceUse",
+							"host": [
+								"{{GAMEX24_URL}}Account"
+							],
+							"path": [
+								"SetRealBalanceUse"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gamex24_ActiveMarketList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Match (Event) Id Into Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var matchedIds = [];\r",
+									"var BetID = [];\r",
+									"\r",
+									"getmatchid.forEach(function (item) {\r",
+									"    if (item.mn === \"TO WIN THE TOSS\") {\r",
+									"        BetID.push(item.mid);\r",
+									"        matchedIds.push(item.eid);\r",
+									"    }\r",
+									"});\r",
+									"pm.environment.set(\"tmp_gamex24_Bet_IDs\", JSON.stringify(BetID));\r",
+									"pm.environment.set(\"tmp_gamex24_Match_IDs\", JSON.stringify(matchedIds));\r",
+									"\r",
+									"postman.setNextRequest(\"Gamex24_GetMatchwiseMarketinfo\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_gamex24_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{GAMEX24_URL}}Market/ActiveMarketList",
+							"host": [
+								"{{GAMEX24_URL}}Market"
+							],
+							"path": [
+								"ActiveMarketList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gamex24_GetMatchwiseMarketinfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Bet Id In Environment variable\r",
+									"var match_id = pm.environment.get(\"tmp_gamex24_Bet_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_gamex24_Bet_ID\", array[0][0]);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Gamex24_GetEventWiseMarketInfo\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var match_id = pm.environment.get(\"tmp_gamex24_Match_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_gamex24_Match_ID\", array[0][1]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_gamex24_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{GAMEX24_URL}}Market/GetMatchWiseMarketInfo?matchId={{tmp_gamex24_Match_ID}}",
+							"host": [
+								"{{GAMEX24_URL}}Market"
+							],
+							"path": [
+								"GetMatchWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_gamex24_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gamex24_GetEventWiseMarketInfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var runinfo = getmatchid.runnerInfo;\r",
+									"pm.environment.set(\"tmp_gamex24_BetDetailID\", JSON.stringify(runinfo[3].rid));\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Gamex24_Balance\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_gamex24_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{GAMEX24_URL}}Market/GetEventWiseMarketInfo?matchId={{tmp_gamex24_Match_ID}}",
+							"host": [
+								"{{GAMEX24_URL}}Market"
+							],
+							"path": [
+								"GetEventWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_gamex24_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gamex24_Balance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var tmp = JSON.parse(responseBody);\r",
+									"\r",
+									"var result = tmp.result;\r",
+									"var tmpbalance = result.balance;\r",
+									"var tmpliability = result.liability;\r",
+									"\r",
+									"pm.environment.set(\"tmp_gamex24_balance\", tmpbalance);\r",
+									"pm.environment.set(\"tmp_gamex24_liability\", tmpliability);\r",
+									"\r",
+									"postman.setNextRequest(\"Gamex24_PlaceBet\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_gamex24_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{GAMEX24_URL}}Chip/Client/Balance",
+							"host": [
+								"{{GAMEX24_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gamex24_PlaceBet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Bet has been placed successfully\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"true;Bet has been placed successfully.\");\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Gamex24_UpdatedBalance\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"tmp_gamex24_stake\", 100);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_gamex24_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"BetId\": {{tmp_gamex24_Bet_ID}},\r\n  \"BetDetailId\": {{tmp_gamex24_BetDetailID}},\r\n  \"IsBack\": true,\r\n  \"Rate\": 1.97,\r\n  \"Stake\": {{tmp_gamex24_stake}},\r\n  \"Fancytype\": 10,\r\n  \"Point\": 1.97,\r\n  \"placeFrom\": 1,\r\n  \"deviceinfo\": \"browser=Chrome:: device=Desktop:: os=Windows:: latitude=0 :: longitude=0\",\r\n  \"isWager\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{GAMEX24_URL}}Bet/PlaceBet",
+							"host": [
+								"{{GAMEX24_URL}}Bet"
+							],
+							"path": [
+								"PlaceBet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gamex24_UpdatedBalance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"var balance = pm.environment.get(\"tmp_gamex24_balance\");\r",
+									"var stake = pm.environment.get(\"tmp_gamex24_stake\");\r",
+									"var liability = pm.environment.get(\"tmp_gamex24_liability\");\r",
+									"var result = response.result;\r",
+									"var tmpupdatebalance = balance - stake;\r",
+									"var tmpupdateliability = liability - stake;\r",
+									"pm.test(\"Wallet balance is Updated\", function(){\r",
+									"\tpm.expect(result.balance).to.eql(tmpupdatebalance)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Liability is Updated\", function(){\r",
+									"\tpm.expect(result.liability).to.eql(tmpupdateliability)\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Gamex24_GetallBetList\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_gamex24_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{GAMEX24_URL}}Chip/Client/Balance",
+							"host": [
+								"{{GAMEX24_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gamex24_GetallBetList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"function cleanup() {\r",
+									"    const clean = _.keys(pm.environment.toObject())\r",
+									"    _.each(clean, (arrItem) => {\r",
+									"        if (arrItem.startsWith(\"tmp\")) {\r",
+									"            pm.environment.unset(arrItem)\r",
+									"        }\r",
+									"    })\r",
+									"};\r",
+									"cleanup()\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_gamex24_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{GAMEX24_URL}}Market/GetAllBetList",
+							"host": [
+								"{{GAMEX24_URL}}Market"
+							],
+							"path": [
+								"GetAllBetList"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "XTRA999_TEST_PLACE_BET",
+			"item": [
+				{
+					"name": "Xtra999_Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Barrier Token To Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"tmp_xtra999_AUTH_TOKEN\", \"bearer \"+ jsonData.result.access_token);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"postman.setNextRequest(\"Xtra999_SetRealBalanceUse\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "sitename",
+								"value": "{{XTRA999_sitename}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"rocktest\",\r\n    \"password\": \"Rock@1234\",\r\n    \"deviceinfo\": \"strModel:vivo - vivo 1716\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{XTRA999_URL}}Account/AppLogin",
+							"host": [
+								"{{XTRA999_URL}}Account"
+							],
+							"path": [
+								"AppLogin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Xtra999_SetRealBalanceUse",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"Xtra999_ActiveMarketList\");\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_xtra999_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{XTRA999_URL}}Account/SetRealBalanceUse",
+							"host": [
+								"{{XTRA999_URL}}Account"
+							],
+							"path": [
+								"SetRealBalanceUse"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Xtra999_ActiveMarketList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Match (Event) Id Into Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var matchedIds = [];\r",
+									"var BetID = [];\r",
+									"\r",
+									"getmatchid.forEach(function (item) {\r",
+									"    if (item.mn === \"TO WIN THE TOSS\") {\r",
+									"        BetID.push(item.mid);\r",
+									"        matchedIds.push(item.eid);\r",
+									"    }\r",
+									"});\r",
+									"pm.environment.set(\"tmp_xtra999_Bet_IDs\", JSON.stringify(BetID));\r",
+									"pm.environment.set(\"tmp_xtra999_Match_IDs\", JSON.stringify(matchedIds));\r",
+									"\r",
+									"postman.setNextRequest(\"Xtra999_GetMatchwiseMarketinfo\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_xtra999_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{XTRA999_URL}}Market/ActiveMarketList",
+							"host": [
+								"{{XTRA999_URL}}Market"
+							],
+							"path": [
+								"ActiveMarketList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Xtra999_GetMatchwiseMarketinfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Bet Id In Environment variable\r",
+									"var match_id = pm.environment.get(\"tmp_xtra999_Bet_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_xtra999_Bet_ID\", array[0][0]);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Xtra999_GetEventWiseMarketInfo\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var match_id = pm.environment.get(\"tmp_xtra999_Match_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_xtra999_Match_ID\", array[0][1]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_xtra999_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{XTRA999_URL}}Market/GetMatchWiseMarketInfo?matchId={{tmp_xtra999_Match_ID}}",
+							"host": [
+								"{{XTRA999_URL}}Market"
+							],
+							"path": [
+								"GetMatchWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_xtra999_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Xtra999_GetEventWiseMarketInfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var runinfo = getmatchid.runnerInfo;\r",
+									"pm.environment.set(\"tmp_xtra999_BetDetailID\", JSON.stringify(runinfo[3].rid));\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Xtra999_Balance\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_xtra999_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{XTRA999_URL}}Market/GetEventWiseMarketInfo?matchId={{tmp_xtra999_Match_ID}}",
+							"host": [
+								"{{XTRA999_URL}}Market"
+							],
+							"path": [
+								"GetEventWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_xtra999_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Xtra999_Balance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var tmp = JSON.parse(responseBody);\r",
+									"\r",
+									"var result = tmp.result;\r",
+									"var tmpbalance = result.balance;\r",
+									"var tmpliability = result.liability;\r",
+									"\r",
+									"pm.environment.set(\"tmp_xtra999_balance\", tmpbalance);\r",
+									"pm.environment.set(\"tmp_xtra999_liability\", tmpliability);\r",
+									"\r",
+									"postman.setNextRequest(\"Xtra999_PlaceBet\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_xtra999_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{XTRA999_URL}}Chip/Client/Balance",
+							"host": [
+								"{{XTRA999_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Xtra999_PlaceBet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Bet has been placed successfully\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"true;Bet has been placed successfully.\");\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Xtra999_UpdatedBalance\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"tmp_xtra999_stake\", 100);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_xtra999_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"BetId\": {{tmp_xtra999_Bet_ID}},\r\n  \"BetDetailId\": {{tmp_xtra999_BetDetailID}},\r\n  \"IsBack\": true,\r\n  \"Rate\": 1.97,\r\n  \"Stake\": {{tmp_xtra999_stake}},\r\n  \"Fancytype\": 10,\r\n  \"Point\": 1.97,\r\n  \"placeFrom\": 1,\r\n  \"deviceinfo\": \"browser=Chrome:: device=Desktop:: os=Windows:: latitude=0 :: longitude=0\",\r\n  \"isWager\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{XTRA999_URL}}Bet/PlaceBet",
+							"host": [
+								"{{XTRA999_URL}}Bet"
+							],
+							"path": [
+								"PlaceBet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Xtra999_UpdatedBalance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"var balance = pm.environment.get(\"tmp_xtra999_balance\");\r",
+									"var stake = pm.environment.get(\"tmp_xtra999_stake\");\r",
+									"var liability = pm.environment.get(\"tmp_xtra999_liability\");\r",
+									"var result = response.result;\r",
+									"var tmpupdatebalance = balance - stake;\r",
+									"var tmpupdateliability = liability - stake;\r",
+									"pm.test(\"Wallet balance is Updated\", function(){\r",
+									"\tpm.expect(result.balance).to.eql(tmpupdatebalance)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Liability is Updated\", function(){\r",
+									"\tpm.expect(result.liability).to.eql(tmpupdateliability)\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Xtra999_GetallBetList\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_xtra999_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{XTRA999_URL}}Chip/Client/Balance",
+							"host": [
+								"{{XTRA999_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Xtra999_GetallBetList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"function cleanup() {\r",
+									"    const clean = _.keys(pm.environment.toObject())\r",
+									"    _.each(clean, (arrItem) => {\r",
+									"        if (arrItem.startsWith(\"tmp\")) {\r",
+									"            pm.environment.unset(arrItem)\r",
+									"        }\r",
+									"    })\r",
+									"};\r",
+									"cleanup()\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_xtra999_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{XTRA999_URL}}Market/GetAllBetList",
+							"host": [
+								"{{XTRA999_URL}}Market"
+							],
+							"path": [
+								"GetAllBetList"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
