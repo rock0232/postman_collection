@@ -1,0 +1,1001 @@
+{
+	"info": {
+		"_postman_id": "825c2525-b888-4593-be00-f99018480b57",
+		"name": "B2B_Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14570965"
+	},
+	"item": [
+		{
+			"name": "AURA25_TEST_PLACE_BET",
+			"item": [
+				{
+					"name": "Aura25_Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Barrier Token To Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"tmp_aura25_AUTH_TOKEN\", \"bearer \"+ jsonData.result.access_token);\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"postman.setNextRequest(\"Aura25_SetRealBalanceUse\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "sitename",
+								"value": "{{AURA25_sitename}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"rocktest\",\r\n    \"password\": \"Rock@1234\",\r\n    \"deviceinfo\": \"strModel:vivo - vivo 1716\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AURA25_URL}}Account/AppLogin",
+							"host": [
+								"{{AURA25_URL}}Account"
+							],
+							"path": [
+								"AppLogin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aura25_SetRealBalanceUse",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"Aura25_ActiveMarketList\");\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_aura25_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{AURA25_URL}}Account/SetRealBalanceUse",
+							"host": [
+								"{{AURA25_URL}}Account"
+							],
+							"path": [
+								"SetRealBalanceUse"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aura25_ActiveMarketList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Match (Event) Id Into Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var matchedIds = [];\r",
+									"var BetID = [];\r",
+									"\r",
+									"getmatchid.forEach(function(item) {\r",
+									"    if (item.mn === \"TO WIN THE TOSS\") {\r",
+									"        BetID.push(item.mid);\r",
+									"        matchedIds.push(item.eid);\r",
+									"    }\r",
+									"});\r",
+									"pm.environment.set(\"tmp_aura25_Bet_IDs\", JSON.stringify(BetID));\r",
+									"pm.environment.set(\"tmp_aura25_Match_IDs\", JSON.stringify(matchedIds));\r",
+									"\r",
+									"postman.setNextRequest(\"Aura25_GetMatchwiseMarketinfo\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_aura25_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{AURA25_URL}}Market/ActiveMarketList",
+							"host": [
+								"{{AURA25_URL}}Market"
+							],
+							"path": [
+								"ActiveMarketList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aura25_GetMatchwiseMarketinfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Bet Id In Environment variable\r",
+									"var match_id = pm.environment.get(\"tmp_aura25_Bet_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_aura25_Bet_ID\", array[0][0]);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Aura25_GetEventWiseMarketInfo\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// console.log(pm.environment.get(\"tmpMatch_IDs\"));\r",
+									"var match_id = pm.environment.get(\"tmp_aura25_Match_IDs\")\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_aura25_Match_ID\", array[0][1])\r",
+									"// pm.environment.get(\"variable_key\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_aura25_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{AURA25_URL}}Market/GetMatchWiseMarketInfo?matchId={{tmp_aura25_Match_ID}}",
+							"host": [
+								"{{AURA25_URL}}Market"
+							],
+							"path": [
+								"GetMatchWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_aura25_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aura25_GetEventWiseMarketInfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var runinfo = getmatchid.runnerInfo;\r",
+									"pm.environment.set(\"tmp_aura25_BetDetailID\", JSON.stringify(runinfo[3].rid));\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Aura25_Balance\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_aura25_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{AURA25_URL}}Market/GetEventWiseMarketInfo?matchId={{tmp_aura25_Match_ID}}",
+							"host": [
+								"{{AURA25_URL}}Market"
+							],
+							"path": [
+								"GetEventWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_aura25_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aura25_Balance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var tmp = JSON.parse(responseBody);\r",
+									"\r",
+									"var result = tmp.result;\r",
+									"var tmpbalance = result.balance;\r",
+									"var tmpliability = result.liability;\r",
+									"\r",
+									"pm.environment.set(\"tmp_aura25_balance\", tmpbalance);\r",
+									"pm.environment.set(\"tmp_aura25_liability\", tmpliability);\r",
+									"\r",
+									"postman.setNextRequest(\"Aura25_PlaceBet\");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_aura25_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{AURA25_URL}}Chip/Client/Balance",
+							"host": [
+								"{{AURA25_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aura25_PlaceBet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.environment.set(\"tmp_aura25_stake\", pm.environment.get(\"tmp_aura25_stake\"))\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Bet has been placed successfully\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"true;Bet has been placed successfully.\");\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Aura25_UpdatedBalance\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"tmp_aura25_stake\", 100);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_aura25_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"BetId\": {{tmp_aura25_Bet_ID}},\r\n  \"BetDetailId\": {{tmp_aura25_BetDetailID}},\r\n  \"IsBack\": true,\r\n  \"Rate\": 1.97,\r\n  \"Stake\": {{tmp_aura25_stake}},\r\n  \"Fancytype\": 10,\r\n  \"Point\": 1.97,\r\n  \"placeFrom\": 1,\r\n  \"deviceinfo\": \"browser=Chrome:: device=Desktop:: os=Windows:: latitude=0 :: longitude=0\",\r\n  \"isWager\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AURA25_URL}}Bet/PlaceBet",
+							"host": [
+								"{{AURA25_URL}}Bet"
+							],
+							"path": [
+								"PlaceBet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aura25_UpdatedBalance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"var balance = pm.environment.get(\"tmp_aura25_balance\");\r",
+									"var stake = pm.environment.get(\"tmp_aura25_stake\");\r",
+									"var liability = pm.environment.get(\"tmp_aura25_liability\");\r",
+									"var result = response.result;\r",
+									"var tmpupdatebalance = balance - stake;\r",
+									"var tmpupdateliability = liability - stake;\r",
+									"\r",
+									"pm.test(\"Wallet balance is Updated\", function(){\r",
+									"\tpm.expect(result.balance).to.eql(tmpupdatebalance)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Liability is Updated\", function(){\r",
+									"\tpm.expect(result.liability).to.eql(tmpupdateliability)\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Aura25_GetallBetList\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_aura25_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{AURA25_URL}}Chip/Client/Balance",
+							"host": [
+								"{{AURA25_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aura25_GetallBetList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"function cleanup() {\r",
+									"    const clean = _.keys(pm.environment.toObject())\r",
+									"    _.each(clean, (arrItem) => {\r",
+									"        if (arrItem.startsWith(\"tmp\")) {\r",
+									"            pm.environment.unset(arrItem)\r",
+									"        }\r",
+									"    })\r",
+									"};\r",
+									"cleanup()\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_aura25_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AURA25_URL}}Market/GetAllBetList",
+							"host": [
+								"{{AURA25_URL}}Market"
+							],
+							"path": [
+								"GetAllBetList"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AURA26_TEST_PLACE_BET",
+			"item": [
+				{
+					"name": "Aura26_Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Barrier Token To Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"tmp_aura26_AUTH_TOKEN\", \"bearer \"+ jsonData.result.access_token);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"postman.setNextRequest(\"Aura26_SetRealBalanceUse\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "sitename",
+								"value": "{{AURA26_sitename}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"rocktest\",\r\n    \"password\": \"Rock@1234\",\r\n    \"deviceinfo\": \"strModel:vivo - vivo 1716\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AURA26_URL}}Account/AppLogin",
+							"host": [
+								"{{AURA26_URL}}Account"
+							],
+							"path": [
+								"AppLogin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aura26_SetRealBalanceUse",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"Aura26_ActiveMarketList\");\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_aura26_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{AURA26_URL}}Account/SetRealBalanceUse",
+							"host": [
+								"{{AURA26_URL}}Account"
+							],
+							"path": [
+								"SetRealBalanceUse"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aura26_ActiveMarketList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Match (Event) Id Into Environment Variable\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var matchedIds = [];\r",
+									"var BetID = [];\r",
+									"\r",
+									"getmatchid.forEach(function(item) {\r",
+									"    if (item.mn === \"TO WIN THE TOSS\") {\r",
+									"        BetID.push(item.mid);\r",
+									"        matchedIds.push(item.eid);\r",
+									"    }\r",
+									"});\r",
+									"pm.environment.set(\"tmp_aura26_Bet_IDs\", JSON.stringify(BetID));\r",
+									"pm.environment.set(\"tmp_aura26_Match_IDs\", JSON.stringify(matchedIds));\r",
+									"\r",
+									"postman.setNextRequest(\"Aura26_GetMatchwiseMarketinfo\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_aura26_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{AURA26_URL}}Market/ActiveMarketList",
+							"host": [
+								"{{AURA26_URL}}Market"
+							],
+							"path": [
+								"ActiveMarketList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aura26_GetMatchwiseMarketinfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Set Bet Id In Environment variable\r",
+									"var match_id = pm.environment.get(\"tmp_aura26_Bet_IDs\");\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_aura26_Bet_ID\", array[0][0]);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Aura26_GetEventWiseMarketInfo\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// console.log(pm.environment.get(\"tmpMatch_IDs\"));\r",
+									"var match_id = pm.environment.get(\"tmp_aura26_Match_IDs\")\r",
+									"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
+									"pm.environment.set(\"tmp_aura26_Match_ID\", array[0][1])\r",
+									"// pm.environment.get(\"variable_key\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_aura26_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{AURA26_URL}}Market/GetMatchWiseMarketInfo?matchId={{tmp_aura26_Match_ID}}",
+							"host": [
+								"{{AURA26_URL}}Market"
+							],
+							"path": [
+								"GetMatchWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_aura26_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aura26_GetEventWiseMarketInfo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var getmatchid = jsonData.result;\r",
+									"var runinfo = getmatchid.runnerInfo;\r",
+									"pm.environment.set(\"tmp_aura26_BetDetailID\", JSON.stringify(runinfo[3].rid));\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Aura26_Balance\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_aura26_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{AURA26_URL}}Market/GetEventWiseMarketInfo?matchId={{tmp_aura26_Match_ID}}",
+							"host": [
+								"{{AURA26_URL}}Market"
+							],
+							"path": [
+								"GetEventWiseMarketInfo"
+							],
+							"query": [
+								{
+									"key": "matchId",
+									"value": "{{tmp_aura26_Match_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aura26_Balance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var tmp = JSON.parse(responseBody);\r",
+									"\r",
+									"var result = tmp.result;\r",
+									"var tmpbalance = result.balance;\r",
+									"var tmpliability = result.liability;\r",
+									"\r",
+									"pm.environment.set(\"tmp_aura26_balance\", tmpbalance);\r",
+									"pm.environment.set(\"tmp_aura26_liability\", tmpliability);\r",
+									"\r",
+									"postman.setNextRequest(\"Aura26_PlaceBet\");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_aura26_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{AURA26_URL}}Chip/Client/Balance",
+							"host": [
+								"{{AURA26_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aura26_PlaceBet",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Bet has been placed successfully\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"true;Bet has been placed successfully.\");\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Aura26_UpdatedBalance\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"tmp_aura26_stake\", 100);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_aura26_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"BetId\": {{tmp_aura26_Bet_ID}},\r\n  \"BetDetailId\": {{tmp_aura26_BetDetailID}},\r\n  \"IsBack\": true,\r\n  \"Rate\": 1.97,\r\n  \"Stake\": {{tmp_aura26_stake}},\r\n  \"Fancytype\": 10,\r\n  \"Point\": 1.97,\r\n  \"placeFrom\": 1,\r\n  \"deviceinfo\": \"browser=Chrome:: device=Desktop:: os=Windows:: latitude=0 :: longitude=0\",\r\n  \"isWager\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AURA26_URL}}Bet/PlaceBet",
+							"host": [
+								"{{AURA26_URL}}Bet"
+							],
+							"path": [
+								"PlaceBet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aura26_UpdatedBalance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"var balance = pm.environment.get(\"tmp_aura26_balance\");\r",
+									"var stake = pm.environment.get(\"tmp_aura26_stake\");\r",
+									"var liability = pm.environment.get(\"tmp_aura26_liability\");\r",
+									"var result = response.result;\r",
+									"var tmpupdatebalance = balance - stake;\r",
+									"var tmpupdateliability = liability - stake;\r",
+									"pm.test(\"Wallet balance is Updated\", function(){\r",
+									"\tpm.expect(result.balance).to.eql(tmpupdatebalance)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Liability is Updated\", function(){\r",
+									"\tpm.expect(result.liability).to.eql(tmpupdateliability)\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Aura26_GetallBetList\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_aura26_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{AURA26_URL}}Chip/Client/Balance",
+							"host": [
+								"{{AURA26_URL}}Chip"
+							],
+							"path": [
+								"Client",
+								"Balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aura26_GetallBetList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"function cleanup() {\r",
+									"    const clean = _.keys(pm.environment.toObject())\r",
+									"    _.each(clean, (arrItem) => {\r",
+									"        if (arrItem.startsWith(\"tmp\")) {\r",
+									"            pm.environment.unset(arrItem)\r",
+									"        }\r",
+									"    })\r",
+									"};\r",
+									"cleanup()\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{tmp_aura26_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{AURA26_URL}}Market/GetAllBetList",
+							"host": [
+								"{{AURA26_URL}}Market"
+							],
+							"path": [
+								"GetAllBetList"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
