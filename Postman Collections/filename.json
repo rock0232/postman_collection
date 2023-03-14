@@ -185,8 +185,9 @@
 						"exec": [
 							"var match_id = pm.environment.get(\"tmpMatch_IDs\")\r",
 							"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
-							"// pm.environment.set(\"tmpMatch_ID\", array[0][1])\r",
-							"// console.log(array)"
+							"pm.environment.set(\"tmpMatch_ID\", array[0][count])\r",
+							"// console.log(array)\r",
+							""
 						],
 						"type": "text/javascript"
 					}
