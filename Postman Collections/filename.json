@@ -368,7 +368,7 @@
 							"var bet_ids = pm.environment.get(\"tmpBet_IDs\")\r",
 							"var match_ids = pm.environment.get(\"tmpMatch_IDs\")\r",
 							"var bet_id = JSON.parse(\"[\" + match_ids + \"]\");\r",
-							"var match_id = JSON.parse(\"[\" + match_ids + \"]\");\r",
+							"var match_id = JSON.parse(\"[\" + bet_ids + \"]\");\r",
 							"console.log(typeof bet_id)\r",
 							"console.log(typeof match_id)\r",
 							"\r",
