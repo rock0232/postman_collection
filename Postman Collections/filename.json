@@ -238,8 +238,7 @@
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
 							"\r",
-							"postman.setNextRequest(\"Balance\");\r",
-							""
+							"postman.setNextRequest(\"Balance\");"
 						],
 						"type": "text/javascript"
 					}
