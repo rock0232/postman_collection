@@ -372,7 +372,7 @@
 							"console.log(typeof bet_id)\r",
 							"console.log(typeof match_id)\r",
 							"\r",
-							"var count = pm.environment.get(\"count\") \r",
+							"var count = pm.environment.get(\"count\")\r",
 							""
 						],
 						"type": "text/javascript"
