@@ -369,7 +369,10 @@
 							"var bet_id = JSON.parse(\"[\" + match_ids + \"]\");\r",
 							"var match_id = JSON.parse(\"[\" + match_ids + \"]\");\r",
 							"console.log(typeof bet_id)\r",
-							"console.log(typeof match_id)"
+							"console.log(typeof match_id)\r",
+							"\r",
+							"var count = pm.environment.get(\"count\") \r",
+							""
 						],
 						"type": "text/javascript"
 					}
