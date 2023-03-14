@@ -149,7 +149,7 @@
 							"// Set Bet Id In Environment variable\r",
 							"var match_id = pm.environment.get(\"tmpBet_IDs\");\r",
 							"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
-							"pm.environment.set(\"tmpBet_ID\", array[0][0]);\r",
+							"pm.environment.set(\"tmpBet_ID\", array[0][count]);\r",
 							"pm.environment.set(\"BetDetails_IDS\", array)\r",
 							"\r",
 							"pm.test(\"Status code is 200\", function () {\r",
