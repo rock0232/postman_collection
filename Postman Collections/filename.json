@@ -366,7 +366,7 @@
 							"//   \"Stake\": {{tmpstake}}\r",
 							"var bet_ids = pm.environment.get(\"tmpBet_IDs\")\r",
 							"var match_ids = pm.environment.get(\"tmpMatch_IDs\")\r",
-							"\r",
+							"var array = JSON.parse(\"[\" + match_ids + \"]\");\r",
 							"console.log(typeof bet_ids)\r",
 							"console.log(typeof match_ids)"
 						],
