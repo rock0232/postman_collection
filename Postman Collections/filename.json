@@ -233,7 +233,7 @@
 							"var getmatchid = jsonData.result;\r",
 							"var runinfo = getmatchid.runnerInfo;\r",
 							"pm.environment.set(\"tmpBetDetailID\", JSON.stringify(runinfo[3].rid));\r",
-							"\r",
+							"console.log(runinfo)\r",
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
