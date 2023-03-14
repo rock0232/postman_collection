@@ -373,8 +373,7 @@
 							"console.log(typeof match_id)\r",
 							"\r",
 							"var count = pm.environment.get(\"count\")\r",
-							"var count = 1\r",
-							"pm.environment.set(\"tmpMatch_ID\",match_id[0][count])\r",
+							"pm.environment.set(\"tmpMatch_ID_demo\",match_id[0][count])\r",
 							""
 						],
 						"type": "text/javascript"
