@@ -147,7 +147,7 @@
 						"id": "e053f400-4922-4942-b438-f3b30065d0f0",
 						"exec": [
 							"// Set Bet Id In Environment variable\r",
-							"var count = pm.environment.get(count)\r",
+							"var count = pm.environment.get(\"count\")\r",
 							"var match_id = pm.environment.get(\"tmpBet_IDs\");\r",
 							"var array = JSON.parse(\"[\" + match_id + \"]\");\r",
 							"pm.environment.set(\"tmpBet_ID\", array[0][count]);\r",
