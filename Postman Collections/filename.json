@@ -365,7 +365,7 @@
 							"//   \"BetDetailId\": {{tmpBetDetailID}},\r",
 							"//   \"Stake\": {{tmpstake}}\r",
 							"pm.environment.get(\"tmpBet_IDs\")\r",
-							""
+							"pm.environment.get(\"tmpMatch_IDs\")"
 						],
 						"type": "text/javascript"
 					}
