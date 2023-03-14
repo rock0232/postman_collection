@@ -364,8 +364,10 @@
 							"//   \"BetId\": {{tmpBet_ID}},\r",
 							"//   \"BetDetailId\": {{tmpBetDetailID}},\r",
 							"//   \"Stake\": {{tmpstake}}\r",
-							"pm.environment.get(\"tmpBet_IDs\")\r",
-							"pm.environment.get(\"tmpMatch_IDs\")"
+							"var bet_ids = pm.environment.get(\"tmpBet_IDs\")\r",
+							"var match_ids = pm.environment.get(\"tmpMatch_IDs\")\r",
+							"\r",
+							"console.log()"
 						],
 						"type": "text/javascript"
 					}
